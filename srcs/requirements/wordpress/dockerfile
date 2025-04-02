@@ -1,55 +1,11 @@
-FROM debian:buster
-
-# RUN apt update
-# RUN apt upgrade -y
-# RUN apt-get -y install wget
-# RUN apt install -y ghostscript \
-# php \
-# php-bcmath \
-# php-curl \
-# php-imagick \
-# php-intl \
-# php-json \
-# php-mbstring \
-# php-mysql \
-# php-xml \
-# php-zip \
-# php-fpm \
-# mariadb-client \
-# iputils-ping \
-# curl
+FROM debian:oldstable
 
 RUN apt update -y
 RUN apt upgrade -y
 RUN apt install php-fpm php-mysql -y && apt install curl -y
 
-# RUN mkdir -p /var/www/html \
-# 	&& chown -R www-data:www-data /var/www/html
-
-# RUN mkdir -p /var/www \
-# 	&& chown www-data: /var/www
-
-#Create the folder to enable php start
-# RUN mkdir /run/php
-
-# RUN curl -o /tmp/wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
-#     tar -xzf /tmp/wordpress.tar.gz -C /var/www/html && \
-#     rm /tmp/wordpress.tar.gz && \
-#     chown -R www-data:www-data /var/www/html
-
-COPY conf/www.conf /etc/php/7.3/fpm/pool.d/
-
-# RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-# 	&& chmod +x wp-cli.phar \
-# 	&& mv wp-cli.phar /usr/local/bin/wp
-
 COPY ./tools/auto-config.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/auto-config.sh
 ENTRYPOINT ["/usr/local/bin/auto-config.sh"]
 
-# #We go the html directory
-# WORKDIR /var/www/html/
-
 EXPOSE 9000
-
-#CMD ["/usr/sbin/php-fpm7.3", "-F"]

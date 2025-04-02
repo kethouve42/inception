@@ -1,34 +1,27 @@
 #!/bin/bash
 
-# Démarrer MySQL et attendre qu'il soit prêt
-service mysql start
+# Vérifier et créer le dossier du socket
+mkdir -p /run/mysqld
+chown -R mysql:mysql /run/mysqld
+chmod 777 /run/mysqld
+
+# Initialiser la base de données si elle n'existe pas
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+    mysql_install_db --user=mysql --ldata=/var/lib/mysql
+fi
+
+# Démarrer MariaDB en arrière-plan
+mysqld_safe --datadir=/var/lib/mysql &
 sleep 5
 
-echo "DEBUG: MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD"
+# Exécuter les commandes MySQL
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
+mysql -u root -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';"
+mysql -u root -e "FLUSH PRIVILEGES;"
 
-# Création de la base de données
-echo "Création de la base..."
-mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
+# Arrêter proprement MariaDB
+mysqladmin -u root shutdown
 
-# Création de l'utilisateur
-echo "Création de l'utilisateur..."
-mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
-
-# Attribution des privilèges
-echo "Attribution des privilèges..."
-mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';"
-
-# Mise à jour de l'utilisateur root
-echo "Mise à jour de l'utilisateur root..."
-mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
-
-# Application des privilèges
-echo "FLUSH..."
-mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;"
-
-# Arrêt sécurisé de MySQL
-echo "Arrêt de MySQL..."
-mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown
-
-# Lancement de MySQL en mode sécurisé
+# Relancer MariaDB en mode sécurisé
 exec mysqld_safe

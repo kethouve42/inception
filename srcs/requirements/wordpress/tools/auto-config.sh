@@ -34,7 +34,7 @@ wp user create $WP_USER $WP_MAIL --role=author --user_pass=$WP_PASS --allow-root
 # // Setup and run PHP
 echo "Setting up PHP..."
 mkdir -p /run/php
-/usr/sbin/php-fpm7.3 -F
+/usr/sbin/php-fpm7.4 -F
 
 
 #VERSION QUI MARCHE MAIS QUI NE CONFIGURE PAS WORDPRRESS

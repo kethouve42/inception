@@ -1,11 +1,9 @@
-FROM debian:buster
+FROM debian:oldstable
 
 # Mise a jour et installation des packages necessaires
 RUN apt update -y
 RUN apt upgrade -y
 RUN apt install nginx -y
-RUN apt install vim -y
-RUN apt install curl -y
 
 # Creation du certificat SSL auto-signé
 RUN mkdir -p etc/nginx/ssl

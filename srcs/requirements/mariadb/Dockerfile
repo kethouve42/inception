@@ -1,11 +1,8 @@
-FROM debian:buster
+FROM debian:oldstable
 
 # Mise a jour et installation des packages necessaires
 RUN apt update -y
 RUN apt upgrade -y
-#RUN apt install nginx -y
-#RUN apt install vim -y
-#RUN apt install curl -y
 RUN apt-get install mariadb-server -y \
 	mariadb-client
 
