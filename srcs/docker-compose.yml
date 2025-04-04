@@ -1,8 +1,10 @@
 services:
   nginx:
-    build: ./srcs/requirements/nginx
+    build: ./requirements/nginx
     container_name: nginx
     restart: always
+    depends_on:
+      - wordpress
     ports:
       - 443:443
     volumes:
@@ -11,7 +13,7 @@ services:
       - inception
 
   mariadb:
-    build: ./srcs/requirements/mariadb
+    build: ./requirements/mariadb
     container_name: mariadb
     restart: always
     env_file: .env
@@ -21,7 +23,7 @@ services:
       - inception
 
   wordpress:
-    build: ./srcs/requirements/wordpress
+    build: ./requirements/wordpress
     container_name: wordpress
     restart: always
     env_file: .env
@@ -35,8 +37,16 @@ services:
 volumes:
   mariadb_data:
     driver: local
+    driver_opts:
+      type: none
+      device: /home/tken66/data/mariadb
+      o: bind
   wordpress_data:
     driver: local
+    driver_opts:
+      type: none
+      device: /home/tken66/data/wordpress
+      o: bind
 
 networks:
   inception:
